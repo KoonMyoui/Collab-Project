@@ -90,6 +90,12 @@ const NewNavBar = () => {
 
             <Menu.Item 
             icon={<UserOutlined />}
+            key="myopport" >
+              <Link to="/user/manage-opport">โครงงานของฉัน</Link>
+            </Menu.Item>
+
+            <Menu.Item 
+            icon={<UserOutlined />}
             key="myrequest" >
               <Link to="/user/my-request">คำขอเข้าร่วม</Link>
             </Menu.Item>

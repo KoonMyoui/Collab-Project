@@ -5,7 +5,7 @@ exports.createProfile = async(req,res)=>{
         const { user } = req.user._id
         console.log("user",req.user._id)
 
-        var profile = await profileModel.findOne({ user });
+        var profile = await profileModel.findOne({ owner: req.user._id })
         console.log("useprofiler",profile)
         if (profile) {
             return res.send({status: "Get Profile Success", data: profile})

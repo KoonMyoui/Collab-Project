@@ -1,5 +1,5 @@
 const OpportModel = require('../models/Opport')
-
+const User = require('../models/User')
 const validateReq = (body) => {
     if (!body.title) throw new Error("Please filled title");
     if (!body.description) throw new Error("Please filled description");
@@ -38,7 +38,9 @@ exports.createOpport = async(req,res)=>{
 
 exports.getAllOpport = async(req,res)=>{
     try{
-        const opport = await OpportModel.find({});
+        const opport = await OpportModel.find({
+            enabled: true
+        });
         res.send(opport);
 
     }catch(err){
@@ -50,7 +52,21 @@ exports.getAllOpport = async(req,res)=>{
 exports.getOpportById = async(req,res)=>{
     try{
         const id = req.params.id;
-        const opport = await OpportModel.findOne({ _id: id });
+        const opport = await OpportModel.findOne({ _id: id })
+        .populate({path: 'owner', select:'-password -role', model: User});
+        res.send(opport);
+
+    }catch(err){
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+
+exports.getAllOpportById = async(req,res)=>{
+    try{
+        const id = req.params.id;
+        const opport = await OpportModel.find({ owner: id })
+        .populate({path: 'owner', select:'-password -role', model: User});
         res.send(opport);
 
     }catch(err){
@@ -61,8 +77,20 @@ exports.getOpportById = async(req,res)=>{
 
 exports.updateOpport = async(req,res)=>{
     try{
-
-        res.send('update opport');
+        const {title, description, collaborate, category} = req.body
+        console.log("updateOpport",req.body)
+        const opport = await OpportModel.findByIdAndUpdate(
+            {_id: req.params.id},
+            {
+                title: title,
+                description: description,
+                collaborate: collaborate,
+                category: category
+            }
+        )
+        // const opp = await OpportModel.findById({_id: req.params.id})
+        console.log("up",opport)
+        res.send('update opport success');
 
     }catch(err){
         console.log(err)
@@ -73,7 +101,7 @@ exports.updateOpport = async(req,res)=>{
 exports.removeOpport = async(req,res)=>{
     try{
         const id = req.params.id;
-        const opport = await OpportModel.findOneAndRemove({_id:id});
+        const opport = await OpportModel.findByIdAndRemove({_id:id});
        res.send('remove success')
 
     }catch(err){
@@ -81,3 +109,33 @@ exports.removeOpport = async(req,res)=>{
         res.status(500).send('Server Error')
     }
 }
+
+exports.changeOpportStatus = async (req, res) => {
+    try {
+        console.log("status",req.body, req.params.id);
+        const opport = await OpportModel.findByIdAndUpdate(
+            { _id: req.params.id },
+            { enabled: req.body.enabled }
+        )
+        res.send('update status success');
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error!");
+    }
+};
+
+exports.changeOpportJoin = async (req, res) => {
+    try {
+        console.log("isjoin",req.body, req.params.id);
+        const opport = await OpportModel.findByIdAndUpdate(
+            { _id: req.params.id },
+            { isJoin: req.body.isJoin }
+        )
+        res.send('update Join success');
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error!");
+    }
+};

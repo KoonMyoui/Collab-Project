@@ -16,6 +16,14 @@ const OpportSchema = new mongoose.Schema(
         },
         category: {
             type: String,
+        },
+        enabled: {
+            type: Boolean,
+            default: true,
+        },
+        isJoin: {
+            type: Boolean,
+            default: true,
         }
     },
     {timestamps: true}

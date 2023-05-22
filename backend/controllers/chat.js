@@ -1,5 +1,6 @@
 const Chat = require("../models/Chat");
 const User = require("../models/User");
+const Message = require("../models/Message")
 
 //Create or fetch One to One Chat
 exports.accessChat = async(req,res)=>{
@@ -54,14 +55,15 @@ exports.accessChat = async(req,res)=>{
 exports.fetchChats = async(req,res)=>{
     try{
         Chat.find({ users: {$elemMatch: { $eq: req.user._id} } })
-        // .populate("users", "-password")
-        // .populate("groupAdmin", "-password")
-        // .populate("latestMessage")
+        .populate({path: 'users', select:'-password -role', model: User})
+        .populate({path: 'groupAdmin', select:'-password -role', model: User})
+        .populate({path: 'latestMessage', select:'-password -role', model: Message})
         .sort({ updatedAt: -1 })
         .then(async (results) => {
             results = await User.populate(results, {
                 path: "latestMassage.sender",
-                select: "username"
+                select: "username",
+                model: User
             });
             console.log(results,'554545454545454545')
             if(results.length > 0){
@@ -131,28 +133,35 @@ exports.renameGroup = async(req,res)=>{
         res.status(500).send('Server Error')
     }
 }
+const adminLeave = () =>{
 
+}
 exports.removeFromGroup = async(req,res)=>{
     try{
         
-        const {chatId, userId } = req.body
-
+        const {chatId, uid } = req.body
+        console.log(req.body)
         //check if requester is admin
-
-        const removeUser = await Chat.findByIdAndUpdate(
-            chatId, 
-            {
-                $pull: { users: userId }
-            }, 
-            {new: true}
-        )
-        // .populate("users", "-password")
-        // .populate("groupAdmin", "-password");
-
-        if (!removeUser){
-            res.status(404).send('Chat not found')
-        }else {
-            res.json(removeUser)
+        const chat = await Chat.findById({_id: chatId})
+        
+        if (uid == chat.groupAdmin){
+            console.log("admin leave group")
+            res.send('your is Admin do not leave')
+        }else{
+            console.log("member leave group")
+            const removeUser = await Chat.findByIdAndUpdate(
+                chatId, 
+                {
+                    $pull: { users: uid }
+                }, 
+                {new: true}
+            )
+    
+            if (!removeUser){
+                res.status(404).send('Chat not found')
+            }else {
+                res.send('Remove Success')
+            }
         }
 
     }catch(err){

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux';
 
-import { Layout, Menu, theme, Input, Button, List, Avatar } from 'antd';
+import { Layout, Menu, theme, Input, Button, List, Avatar, Modal, Drawer } from 'antd';
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 
 import './user/UserChat.css'
 
-import { getMyChat } from '../functions/chat'
+import { getMyChat, leaveGroup } from '../functions/chat'
 import { getAllMessage, sendMessage } from '../functions/message';
 
 const NewChat = () => {
@@ -21,12 +21,16 @@ const NewChat = () => {
     const user = useSelector((state) => state.userStore)
     console.log('user',user)
     const token = user.payload.token
+    const uid = user.payload.id
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [open, setOpen] = useState(false);
     //logic chat
     const [selectedChat, setSelectedChat] = useState(null);
     const [selectedChatID, setSelectedChatID] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+    const [chatData, setChatData] = useState(null);
 
     const handleMessageSend = (message) => {
         console.log(message)
@@ -49,6 +53,7 @@ const NewChat = () => {
 
         setSelectedChat(value.chatName);
         setSelectedChatID(value._id)
+        setChatData(value)
     }
 
     const chatMessage = messages.filter((message) => {
@@ -88,9 +93,57 @@ const NewChat = () => {
         })
     }
 
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+    //Drawer
+    const showDrawer = () => {
+        setOpen(true);
+    };
+
+    const onClose = () => {
+        setOpen(false);
+    };
+// List Handle
+    const handleLeaveGroup = (chatId) => {
+        console.log('Edit item with id:', chatId);
+        // getAllMessage(chatId, token)
+        handleRemoveMember({chatId, uid})
+        
+      };
+    
+    const handleDelete = (value) => {
+        console.log('Delete item with id:', value);
+        handleRemoveMember(value)
+    };
+
+    const handleRemoveMember = (value) => {
+        console.log('handleRemoveMember item with id:', value);
+        leaveGroup(value, token)
+        .then(res => {
+            console.log(res)
+            alert(res.data)
+            // fetchMessage(value.chatId, token)
+            // fetchChat()
+
+        }).catch(err =>{
+            console.log(err.response)
+        })
+    };
+
     console.log(data )
     console.log(chatMessage)
     console.log(selectedChat)
+    console.log(chatData)
   return (
     <div>
         <Layout className="chat-page">
@@ -128,7 +181,61 @@ const NewChat = () => {
                     padding: 0,
                     background: colorBgContainer,
                 }}
-                /> 
+                >
+                    {selectedChat && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+                            <Button type="primary" onClick={showDrawer}>Meeeeeee</Button>
+                        </div>
+                        
+                    )}
+
+                    <Drawer
+                        title="Basic Drawer"
+                        placement='right'
+                        closable={false}
+                        onClose={onClose}
+                        open={open}
+                        key='right'
+                    >
+                        {chatData && (
+                        <List
+                            itemLayout="horizontal"
+                            dataSource={chatData.users}
+                            renderItem={(item, index) => (
+                            <List.Item
+                            //check isAdmin
+                                
+                                actions={[
+                                    chatData.groupAdmin._id === uid && (
+                                        <Button danger onClick={() => handleDelete({
+                                            chatId: chatData._id, 
+                                            uid: item._id
+                                            })} 
+                                            key="delete">
+                                            Delete
+                                        </Button>
+                                    )
+                                    
+                                ]}
+                            >
+                                
+                                <List.Item.Meta
+                                    avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
+                                    title={item.username}
+                                    description={false}
+                                />
+                            </List.Item>
+                           
+                            )}
+                        />
+                        )}
+                        {chatData && (
+                            <Button type="primary" danger onClick={()=> handleLeaveGroup(chatData._id)}>Leave Group</Button>
+                        )}
+                            
+                    </Drawer>
+                    
+                </Header> 
 
                 <Content
                 className="chat-window"
@@ -162,7 +269,7 @@ const NewChat = () => {
 
                 <div>
                     {chatMessage && 
-                    chatMessage.map((message) => (
+                    chatMessage.map((message, index) => (
                         <div
                         className={message.sender._id === user.payload.id ? 'message-sender' : 'message-recipient'}  
                         key={message._id}>

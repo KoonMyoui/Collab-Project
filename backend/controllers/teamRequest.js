@@ -85,8 +85,7 @@ exports.MeRequested = async(req,res)=>{
         // .populate("senderID", "-password", User)
         .populate({path: 'projectID', model: OpportModel})
         .populate({path: 'senderID', select:'-password -role', model: User})
-        console.log(requested)
-        // res.json(requested);
+        console.log(requested.length)
         if (!requested) {
             res.json({status:false, text: 'No request'})
         }
@@ -98,9 +97,40 @@ exports.MeRequested = async(req,res)=>{
     }
 }
 
-const removeFromRequest = (body) => {
-    // if (!body.title) throw new Error("Please filled title");
-    // if (!body.description) throw new Error("Please filled description");
+exports.MeSentRequested = async(req,res)=>{
+
+    try{
+        console.log("uid me sent",req.params.uid)
+        const requested = await TeamRequest.find({
+            senderID: req.params.uid
+        })
+        // .populate("senderID", "-password", User)
+        .populate({path: 'projectID', model: OpportModel})
+        .populate({path: 'ownerID', select:'-password -role', model: User})
+        console.log(requested.length)
+        // res.json(requested);
+        if (!requested) {
+            res.json({status:false, text: 'No Sent request'})
+        }else{
+            res.json(requested);
+        }
+        
+
+    }catch(err){
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+
+exports.removeRequest = async(req,res) => {
+   try {
+    console.log("delete request",req.params.id)
+    const teamRequest = await TeamRequest.findOneAndRemove({_id:req.params.id})
+    res.send("remove success")
+   } catch (error) {
+    console.log(err)
+    res.status(500).send('Server Error')
+   }
 };
 
 exports.acceptToGroup = async(req,res)=>{

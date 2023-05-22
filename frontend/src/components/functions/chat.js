@@ -17,3 +17,13 @@ export const getMyChat = async(authtoken)=>{
         }
     });
 }
+
+export const leaveGroup = async( values, authtoken)=>{
+    return await axios.put(process.env.REACT_APP_API+ "/chat/group/remove-user",values,
+    {
+        headers: {
+            Authorization: `Bearer ${authtoken}`
+        }
+    });
+}
+///chat/group/remove-user

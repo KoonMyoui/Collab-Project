@@ -21,11 +21,11 @@ export function Chat() {
         socket.emit("send_message", {message})
     }
 
-    useEffect(()=>{
-        socket.on("recieve_message",(data)=>{
-            setMessageReceived(data.message)
-        })
-    },[socket])
+    // useEffect(()=>{
+    //     socket.on("recieve_message",(data)=>{
+    //         setMessageReceived(data.message)
+    //     })
+    // },[socket])
 
 
     const [messages, setMessages] = useState([]);

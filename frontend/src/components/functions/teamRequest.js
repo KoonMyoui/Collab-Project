@@ -27,8 +27,26 @@ export const getAllMeRequest = async (id,authtoken) => {
       });
 };
 
+export const getAllMeSentRequest = async (id,authtoken) => {
+  return await axios.get(process.env.REACT_APP_API + "/join-project/me-sent-request/" + id,
+  {
+      headers: {
+        Authorization: `Bearer ${authtoken}`
+      }
+    });
+};
+
 export const acceptRequested = async (values, authtoken) => {
   return await axios.post(process.env.REACT_APP_API + "/join-project/accept",values,
+  {
+    headers: {
+      Authorization: `Bearer ${authtoken}`
+    }
+  });
+};
+
+export const removeRequested = async (id, authtoken) => {
+  return await axios.delete(process.env.REACT_APP_API + "/join-project/cancel-request/"+id,
   {
     headers: {
       Authorization: `Bearer ${authtoken}`

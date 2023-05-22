@@ -126,25 +126,6 @@ const OpportForm = () => {
             </Select>
 
             </Form.Item>
-
-            {/* <Checkbox
-                    checked={opportFormDisabled}
-                    onChange={(e) => setOpportFormDisabled(e.target.checked)}
-                >
-                    สร้างแชทสำหรับโปรเจคนี้หรือไม่
-            </Checkbox>
-            <Form.Item
-                label="Chat name"
-                name="chatName"
-                rules={[
-                    {
-                    required: opportFormDisabled,
-                    message: 'Please input your chat name',
-                    },
-                ]}
-                hidden={!opportFormDisabled}>
-                    <Input />
-            </Form.Item> */}
             
             <Form.Item
             wrapperCol={{
@@ -158,24 +139,6 @@ const OpportForm = () => {
             </Form.Item>
         </Form>
 
-        {/* <Checkbox
-        checked={opportFormDisabled}
-        onChange={(e) => setOpportFormDisabled(e.target.checked)}
-      >
-        สร้างแชทสำหรับโปรเจคนี้หรือไม่
-      </Checkbox>
-      <Form.Item
-      label="Chat name"
-      name="chatName"
-      rules={[
-          {
-          required: true,
-          message: 'Please input your colab',
-          },
-      ]}
-      hidden={!opportFormDisabled}>
-        <Input />
-      </Form.Item> */}
     </div>
   )
 }

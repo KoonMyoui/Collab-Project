@@ -20,6 +20,7 @@ import ProjectDetail from './components/pages/user/ProjectDetail'
 import ChatPage from "./components/pages/user/ChatPage"
 import MyRequest from "./components/pages/user/MyRequest";
 import Profile from "./components/pages/user/Profile"
+import ManageOpport from "./components/pages/user/ManageOpport";
 //page admin
 import AddminHome from './components/pages/admin/Home'
 import ManageUser from "./components/pages/admin/ManageUser";
@@ -56,7 +57,8 @@ function App() {
           token: idtoken,
           id: res.data._id,
           username: res.data.username,
-          role: res.data.role
+          role: res.data.role,
+          pic:res.data.pic
         }
       }));
     }).catch(err=>{
@@ -85,6 +87,7 @@ function App() {
         <Route path="/user/opport-form" element={ <UserRoute> <OpportForm/> </UserRoute> }/>
         <Route path="/user/my-request" element={ <UserRoute> <MyRequest/> </UserRoute> }/>
         <Route path="/user/profile" element={ <UserRoute> <Profile/> </UserRoute> }/>
+        <Route path="/user/manage-opport" element={ <UserRoute> <ManageOpport/> </UserRoute> }/>
 
       </Routes>
     </div>

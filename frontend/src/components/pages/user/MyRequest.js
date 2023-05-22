@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 
 import { useSelector } from "react-redux";
 import { getAllMeRequest, acceptRequested } from '../../functions/teamRequest';
-import { Col, Row , Card, Button, Space} from 'antd';
+import { Col, Row , Card, Button, Space, Typography} from 'antd';
 
+import SentRequest from './SentRequest';
+const { Title } = Typography;
 
 const MyRequest = () => {
     const [data, setData] = useState([]);
@@ -20,6 +22,7 @@ const MyRequest = () => {
     const loadData = () => {
         getAllMeRequest(uid,token)
         .then(res => {
+          console.log('my req',res.data)
           setData(res.data)
     
         }).catch(err =>{
@@ -64,40 +67,67 @@ const MyRequest = () => {
 
   return (
     <div>
+
         <Row>
-          {data.map((item, index) => 
+          <Col span={12}>
+            <div className="flex justify-center">
 
-              <Card
-              hoverable
-              size="small"
-              title= <p key={index}>โครงงาน :{item.projectID.title}</p>
-            //   extra={<Link to={"/detail/"+ item._id} key={index} >More</Link>}
-              style={{
-                width: 500,
-              }}
+              <Title level={3}>คำขอที่ได้รับ</Title>
+            </div>
+              <Space
+                direction="vertical"
+                size="middle"
+                style={{
+                  display: 'flex',
+                }}
               >
-              <p key={index}>ผู้ใช้ : {item.senderID.username} สนใจร่วมงานกับคุณ</p>
-              <Space wrap>
-                <Button type="primary" onClick={e =>handleAccept({
-                  accept: true,
-                  senderID: item.senderID._id,
-                  projectID: item.projectID._id
-                })} 
-                >Accept
-                </Button>
+                {data.map((item, index) => 
+                  <Card
+                    hoverable
+                    size="small"
+                    title= <p key={index}>โครงงาน :{item.projectID.title}</p>
+                    //   extra={<Link to={"/detail/"+ item._id} key={index} >More</Link>}
+                    style={{
+                      width: 500,
+                    }}
+                    >
+                    <p key={index}>ผู้ใช้ : {item.senderID.username} สนใจร่วมงานกับคุณ</p>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
 
-                <Button type="primary" danger onClick={e => handleCancel({
-                  accept: false,
-                  senderID: item.senderID._id,
-                  projectID: item.projectID._id
-                })}>Denied</Button>
-                
+<                   Space wrap>
+                      <Button type="primary" onClick={e =>handleAccept({
+                        accept: true,
+                        senderID: item.senderID._id,
+                        projectID: item.projectID._id
+                      })} 
+                      >ยอมรับ
+                      </Button>
+
+                      <Button type="primary" danger onClick={e => handleCancel({
+                        accept: false,
+                        senderID: item.senderID._id,
+                        projectID: item.projectID._id
+                      })}>ปฎิเสธ</Button>
+                    </Space>
+
+                    </div>
+                    
+                  </Card>
+                )}
               </Space>
-              </Card>
-          )}
-          {!data && (
-            <h1>No Request</h1>
-          )}
+              
+                {data.length === 0 && (
+                <h1>No Request</h1>
+                )}
+          
+          </Col>
+
+          <Col span={12}>
+          <Title level={3}>คำขอที่ส่ง</Title>
+
+          <SentRequest/>
+
+          </Col>
         </Row>
     </div>
   )

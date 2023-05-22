@@ -52,6 +52,7 @@ const ProjectDetail = () => {
         .then(res => {
           setloading(false)
           setProject(res.data)
+          console.log(res.data)
   
         }).catch(err =>{
             console.log(err.response)
@@ -105,7 +106,10 @@ const ProjectDetail = () => {
         <Row justify="center">
             <Col flex={3}>
                 <h1> detail area</h1>
-                <h2>{project.owner}</h2>
+                {project.owner && (
+                    <h2>{project.owner.username}</h2> 
+                )}
+                
             </Col>
             <Col flex={2}>
                 <h1>Join area</h1>
