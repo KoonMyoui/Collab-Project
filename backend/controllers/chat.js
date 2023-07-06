@@ -65,13 +65,13 @@ exports.fetchChats = async(req,res)=>{
                 select: "username",
                 model: User
             });
-            console.log(results,'554545454545454545')
+            console.log(results,'result')
             if(results.length > 0){
                 res.send(results);
             }else{
                 res.send('No chat for me')
             }
-            
+     
         })
 
     }catch(err){

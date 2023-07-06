@@ -30,6 +30,13 @@ exports.updateUser = async(req,res)=>{
     try{
         console.log("updateValues",req.body)
         var {id,username, password} = req.body
+        //check username is used
+        
+        const usedUser = await User.findOne({ username: username})
+        if (usedUser){
+            return res.status(400).send("User Already exists")
+        }
+        
         // 1 gen salt
         const salt = await bcrypt.genSalt(10);
         // 2 encrypt
@@ -61,8 +68,7 @@ exports.removeUser = async(req,res)=>{
 }
 
 exports.changeRole = async(req,res)=>{
-    try{
-        
+    try{ 
         console.log(req.body)
         const user = await User.findOneAndUpdate(
             {_id: req.body.id},

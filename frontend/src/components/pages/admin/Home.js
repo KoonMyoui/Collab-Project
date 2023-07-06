@@ -1,8 +1,9 @@
 import React from 'react'
-import { Col, Row } from 'antd';
+import { Col, Row, Typography  } from 'antd';
 import MenubarAdmin from '../../layouts/MenubarAdmin'
 
 const Home = () => {
+  const { Title } = Typography;
   return (
     <div>
       <Row>
@@ -12,7 +13,7 @@ const Home = () => {
           
         </Col>
         <Col flex="auto" >
-            <h2>Addmin Home Page</h2>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: 24 ,marginTop: 14}}>Addmin Home</Title>
         </Col>
       </Row>
       

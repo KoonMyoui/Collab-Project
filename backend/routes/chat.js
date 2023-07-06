@@ -17,12 +17,13 @@ const { accessChat,
 //@Method   POST
 //@Access   Private
 router.post('/chat', protect, accessChat)
-router.get('/chat',protect, fetchChats);
 router.put('/chat/rename',protect , renameGroup);
-
 router.post('/chat/group',protect , createGroupChat);
+
+router.get('/chat',protect, fetchChats);
 router.post('/chat/group/new-group',protect , createNewGroupChat);
 router.put('/chat/group/remove-user',protect , removeFromGroup);
+
 router.put('/chat/group/add-user',protect , addToGroup);
 
 module.exports = router

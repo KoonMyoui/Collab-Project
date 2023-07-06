@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 
 import moment from "moment/min/moment-with-locales"
 
-import { Col, Row , Table, Switch ,Space, Select, Tag, Modal} from 'antd';
+import { Col, Row , Table, Switch ,Space, Select, Tag, Modal, Typography} from 'antd';
 import { EditOutlined , DeleteOutlined } from '@ant-design/icons';
 
 import MenubarAdmin from '../../layouts/MenubarAdmin'
@@ -20,6 +20,7 @@ const ManageUser = () => {
     password: ""
   })
 
+  const { Title } = Typography;
 
   const showModal = (uid) => {
     setIsModalOpen(true);
@@ -205,7 +206,13 @@ const userColumns = [
           
         </Col>
         <Col flex="auto" >
-            <h2>Addmin ManageUser Page</h2>
+            <Title level={3} style={{ 
+              textAlign: 'center', 
+              marginBottom: 24 ,
+              marginTop: 14}}
+              >Addmin ManageUser
+              </Title>
+
             <div>
               {loading ? ("loading") :
               (
@@ -216,8 +223,7 @@ const userColumns = [
               )
               }
             </div>
-            <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <p>Edit user</p>
+            <Modal title="Edit" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
         <label>Username</label>
           <input type="text" name="username" onChange={handleChangePassword}/>

@@ -190,7 +190,7 @@ const NewChat = () => {
                     )}
 
                     <Drawer
-                        title="Basic Drawer"
+                        title="option"
                         placement='right'
                         closable={false}
                         onClose={onClose}
@@ -239,9 +239,9 @@ const NewChat = () => {
 
                 <Content
                 className="chat-window"
-                // style={{
-                //     margin: '24px 16px 0',
-                // }}
+                style={{
+                    // minHeight: 'calc(100vh - 64px)'
+                }}
                 >
                 {/* <div
                     style={{

@@ -59,16 +59,16 @@ exports.CheckRequested = async(req,res)=>{
 
     try{
         const { project_id, sender_id } = req.body;
-        console.log("####merequested",project_id, sender_id)
+        console.log("##checkReq",project_id, sender_id)
         const requested = await TeamRequest.findOne({
-            // projectID: project_id,
-            // senderID: sender_id
+            projectID: project_id,
+            senderID: sender_id
         })
-        console.log(requested,"454545")
+        console.log(requested,"CheckReq exited")
         if (!requested) {
-            res.json({status:false})
+            res.json({status:false, text: "not req"})
         }
-        res.json({status:true});
+        res.json({status:true, text: "already req"});
 
     }catch(err){
         console.log(err)

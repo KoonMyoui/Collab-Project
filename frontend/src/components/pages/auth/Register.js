@@ -1,10 +1,8 @@
 import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Checkbox, Form, Input, Space } from 'antd';
+import { Button, Checkbox, Form, Input, Space, Typography  } from 'antd';
 
 import { register } from '../../functions/auth'
-
-
 
 const Register = () => {
 
@@ -15,6 +13,8 @@ const Register = () => {
     password:"",
     password1:""
   })
+
+  const { Title } = Typography;
 
   const onFinish = (values) => {
     console.log('Success:', values);
@@ -64,7 +64,7 @@ const Register = () => {
 
   return (
     <div>
-        <h3>Register page</h3>
+        
         {/* <form onSubmit={handleSubmit}>
           <label>Username</label>
           <input type="text" name="username" onChange={handleChange}/>
@@ -78,7 +78,101 @@ const Register = () => {
           <button disabled={value.password.length < 8}>submit</button>
         </form> */}
 
-        <div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 64px)' }}>
+          <div style={{ width: 400, padding: 24, boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)', borderRadius: 8 }}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: 24 ,marginTop: 14}}>Register</Title>
+
+            <Form
+              name="basic"
+              labelCol={{
+                span: 8,
+              }}
+              wrapperCol={{
+                span: 16,
+              }}
+              style={{
+                maxWidth: 600,
+              }}
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+            >
+                <Form.Item
+                  label="Username"
+                  name="username"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your username!',
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+
+                <Form.Item
+                  name="password"
+                  label="Password"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your password!',
+                    },
+                    {
+                      type: 'string',
+                      min: 8,
+                    },
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                  name="confirm"
+                  label="Confirm Password"
+                  dependencies={['password']}
+                  hasFeedback
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please confirm your password!',
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                style={{ display: 'flex', justifyContent: 'end' }}
+                  // wrapperCol={{
+                  //   offset: 8,
+                  //   span: 16,
+                  // }}
+                >
+                <Space wrap size={'large'}>
+                  <Button type="primary" htmlType="submit" style={{ backgroundColor: 'green' }}>
+                    Submit
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Form>
+
+          </div>
+        </div>
+
+        {/* <div style={{display:'flex', justifyContent: 'center'}}>
           <Form
             name="basic"
             labelCol={{
@@ -157,15 +251,15 @@ const Register = () => {
                   span: 16,
                 }}
               >
-            <Space wrap size={'large'}>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
+              <Space wrap size={'large'}>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
 
-            </Space>
-          </Form.Item>
-        </Form>
-        </div>
+              </Space>
+            </Form.Item>
+          </Form>
+        </div> */}
     </div>
 
   )

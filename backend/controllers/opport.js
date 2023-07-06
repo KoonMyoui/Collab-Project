@@ -40,7 +40,8 @@ exports.getAllOpport = async(req,res)=>{
     try{
         const opport = await OpportModel.find({
             enabled: true
-        });
+        })
+        .sort({ createdAt: -1 })
         res.send(opport);
 
     }catch(err){
