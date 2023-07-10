@@ -6,7 +6,7 @@ import Register from "./components/pages/auth/Register";
 import Login from "./components/pages/auth/Login";
 import Home from "./components/pages/Home";
 import { Counter } from "./components/pages/Couter";
-import { Chat } from "./components/pages/Chat";
+import  Chat  from "./components/pages/Chat";
 import  NewChat  from "./components/pages/NewChat"
 
 //layout
@@ -76,7 +76,7 @@ function App() {
         <Route path="/register" element={<Register/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/couter" element={<Counter/>}/>
-        <Route path="/chat" element={<ChatPage/>}/>
+        <Route path="/chat" element={<Chat/>}/>
         <Route path="/newchat" element={<NewChat/>}/>
         <Route path="/detail/:id" element={<ProjectDetail/>}/>
 

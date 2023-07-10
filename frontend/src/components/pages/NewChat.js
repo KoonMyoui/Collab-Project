@@ -9,6 +9,9 @@ import './user/UserChat.css'
 import { getMyChat, leaveGroup } from '../functions/chat'
 import { getAllMessage, sendMessage } from '../functions/message';
 
+import io from 'socket.io-client'
+const socket = io.connect("http://localhost:5000")
+
 const NewChat = () => {
     //Antd
     const { Header, Content, Footer, Sider } = Layout;
@@ -20,8 +23,13 @@ const NewChat = () => {
     //token
     const user = useSelector((state) => state.userStore)
     console.log('user',user)
-    const token = user.payload.token
-    const uid = user.payload.id
+
+    let previousSenderId = null;
+    let lastSender = null;
+    // const uid = user.payload.id
+    // const token = user.payload.token
+    const [uid, setUid] = useState("");
+    const [token, setToken] = useState("");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [open, setOpen] = useState(false);
@@ -32,18 +40,30 @@ const NewChat = () => {
     const [newMessage, setNewMessage] = useState("");
     const [chatData, setChatData] = useState(null);
 
-    const handleMessageSend = (message) => {
-        console.log(message)
-        sendMessage({content: message, chatId: selectedChatID}, token)
-        .then(res =>{
-            console.log(res)
-            setMessages([...messages, res.data])
-            setNewMessage("")
-            
-        }).catch(err=>{
-            console.log(err)
-        })
+    //socket
+    const joinRoom = (e) => {
+        // e.preventDefault()
+        if (selectedChatID !== "") {
+            console.log("join_room ",selectedChatID)
+          socket.emit("join_room", selectedChatID);
+        }
+    };
 
+    const handleMessageSend = (message) => {
+        // console.log(message)
+        //set socket.io
+        socket.emit("send_message", {content: message, chatId: selectedChatID, sender: uid, room: selectedChatID})
+        // sendMessage({content: message, chatId: selectedChatID}, token)
+        // .then(res =>{
+        //     console.log(res)
+        //     setMessages([...messages, res.data])
+        //     setNewMessage("")
+            
+        // }).catch(err=>{
+        //     console.log(err)
+        // })
+
+        setNewMessage("")
     };
 
     const handleSelectedChat = (value) =>{
@@ -54,6 +74,8 @@ const NewChat = () => {
         setSelectedChat(value.chatName);
         setSelectedChatID(value._id)
         setChatData(value)
+
+        // joinRoom()
     }
 
     const chatMessage = messages.filter((message) => {
@@ -66,14 +88,42 @@ const NewChat = () => {
     const [data, setData] = useState([]);
 
     useEffect(()=>{
-        fetchChat()
-    }, []);
+        if (token){
+            fetchChat()
+        }
+        
+    }, [token]);
 
-    // useEffect(()=>{
-
-    // }, [])
+    useEffect(() => {
+        if (user && user.payload) {
+          setToken(user.payload.token);
+          setUid(user.payload.id)
+        }
+    }, [user]);
     
+    useEffect(() => {
+        if (!socket) return;
+        socket.on("recieve_message", (data) =>{
+            console.log("recieve_message other room", data.room, " room : ", selectedChatID)
+            if(data.room === selectedChatID){
+                console.log("recieve_message", data)
+                fetchMessage(selectedChatID, token)
+            };
+
+            console.log("recieve_message other room", data.room, " room : ", selectedChatID)
+            
+        })
+
+    }, [socket])
+
+    useEffect(() => {
+        if (!selectedChatID) return;
+        joinRoom()
+        
+    }, [selectedChatID])
+
     const fetchChat = () => {
+        console.log("fetchChat ",token)
         getMyChat(token)
         .then(res => {
           setData(res.data)
@@ -146,6 +196,7 @@ const NewChat = () => {
     console.log(chatData)
   return (
     <div>
+        
         <Layout className="chat-page">
             <Sider
                 breakpoint="lg"
@@ -175,7 +226,9 @@ const NewChat = () => {
                 </Menu>
             </Sider>
 
+            {selectedChat && (
             <Layout>
+            
                 <Header
                 style={{
                     padding: 0,
@@ -184,7 +237,7 @@ const NewChat = () => {
                 >
                     {selectedChat && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-                            <Button type="primary" onClick={showDrawer}>Meeeeeee</Button>
+                            <Button type="primary" onClick={showDrawer}>option</Button>
                         </div>
                         
                     )}
@@ -240,7 +293,6 @@ const NewChat = () => {
                 <Content
                 className="chat-window"
                 style={{
-                    // minHeight: 'calc(100vh - 64px)'
                 }}
                 >
                 {/* <div
@@ -268,51 +320,157 @@ const NewChat = () => {
                 </div> */}
 
                 <div>
-                    {chatMessage && 
-                    chatMessage.map((message, index) => (
+                {chatMessage &&
+                    chatMessage.map((message, index) => {
+                    const isLastSender =
+                        index === chatMessage.length - 1 ||
+                        message.sender._id !== chatMessage[index + 1].sender._id;
+
+                    const isRecipient = message.sender._id !== user.payload.id;
+
+                    // Check if it's the last message of the sender or the recipient
+                    if (isLastSender || (isRecipient && previousSenderId !== message.sender._id)) {
+                        previousSenderId = message.sender._id;
+
+                        return (
                         <div
-                        className={message.sender._id === user.payload.id ? 'message-sender' : 'message-recipient'}  
-                        key={message._id}>
+                            className={
+                            message.sender._id === user.payload.id
+                                ? 'message-sender'
+                                : 'message-recipient'
+                            }
+                            key={message._id}
+                            style={{ marginBottom: '15px'}}
+                        >
+                            {/* <Avatar
+                            size="middle"
+                            style={{ verticalAlign: 'middle', marginRight: 8 }}
+                            src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`}
+                            /> */}
 
-                            {message.sender._id !== user.payload.id && (
-                                <Avatar size="middle" style={{ verticalAlign: 'middle'}} src="https://via.placeholder.com/50" />
-                            )}
+                            
+                            {/* <span
+                            // style={{
+                            //     backgroundColor: `${
+                            //     message.sender._id === user.payload.id
+                            //         ? '#B9F5D0'
+                            //         : '#BEE3F8'
+                            //     }`,
+                            //     marginLeft: message.sender._id === user.payload.id ? 33 : 0,
+                            //     marginTop: message.sender._id === user.payload.id ? 3 : 3,
+                            //     borderRadius: '20px',
+                            //     padding: '5px 15px',
+                            //     maxWidth: '75%',
+                            // }}
 
-                            <span 
-                                // className={message.sender._id === user.payload.id ? 'message-sender' : 'message-recipient'}
-                                style={{
+                            style={{
                                 backgroundColor: `${
-                                    message.sender._id === user.payload.id ? "#B9F5D0" : "#BEE3F8"
+                                  message.sender._id === user.payload.id
+                                    ? '#B9F5D0'
+                                    : '#BEE3F8'
                                 }`,
-                                marginLeft: message.sender._id === user.payload.id ? 33 : 0,
-                                marginTop: message.sender._id === user.payload.id ? 3 : 3,
-                                borderRadius: "20px",
-                                padding: "5px 15px",
-                                maxWidth: "75%",
-                                
-                                }}
+                                marginLeft:
+                                  message.sender._id === user.payload.id ? 0 : '40px',
+                                marginTop: '3px',
+                                borderRadius: '20px',
+                                padding: '5px 15px',
+                                maxWidth: '75%',
+                              }}
                             >
-                                {message.content}
-                                {/* {message.content.replace(/\r?\n/g, '\n')} */}
-                            </span>
+                            {message.content}
+                            </span> */}
+                            
 
-                            {message.sender._id === user.payload.id && (
-                                <Avatar size="middle" style={{ verticalAlign: 'middle'}} src="https://via.placeholder.com/50" />
-                                )}
+                            {message.sender._id === user.payload.id ? (
+                                <>
+                                    <span
 
-
+                                        style={{
+                                            backgroundColor: `${
+                                            message.sender._id === user.payload.id
+                                                ? '#B9F5D0'
+                                                : '#BEE3F8'
+                                            }`,
+                                            marginLeft:
+                                            message.sender._id === user.payload.id ? 30 : '40px',
+                                            marginRight: 15,
+                                            marginTop: '3px',
+                                            borderRadius: '20px',
+                                            padding: '5px 15px',
+                                            maxWidth: '75%',
+                                        }}
+                                        >
+                                        {message.content}
+                                    </span>
+                                    <Avatar size={"large"}>{message.sender.username}</Avatar>
+                                </>)
+                                :
+                                <>
+                                    <Avatar size={"large"}>{message.sender.username}</Avatar>
+                                    <span
+                                        style={{
+                                            backgroundColor: `${
+                                            message.sender._id === user.payload.id
+                                                ? '#B9F5D0'
+                                                : '#BEE3F8'
+                                            }`,
+                                            marginLeft:
+                                            message.sender._id === user.payload.id ? 0 : '10px',
+                                            marginTop: '3px',
+                                            borderRadius: '20px',
+                                            padding: '5px 15px',
+                                            maxWidth: '75%',
+                                        }}
+                                    >
+                                        {message.content}
+                                    </span>
+                                </>
+                            }
                         </div>
-                    ))}
+                        );
+                    }
 
+                    // return null;
+                    else if (!isLastSender){
+                        return (<div
+                            className={
+                            message.sender._id === user.payload.id
+                                ? 'message-sender'
+                                : 'message-recipient'
+                            }
+                            key={message._id}
+                        >
+                            {/* <Avatar
+                            size="middle"
+                            style={{ verticalAlign: 'middle', marginRight: 8 }}
+                            src="https://via.placeholder.com/50"
+                            /> */}
+
+                            <span
+                            style={{
+                                backgroundColor: `${
+                                message.sender._id === user.payload.id
+                                    ? '#B9F5D0'
+                                    : '#BEE3F8'
+                                }`,
+                                marginLeft: message.sender._id === user.payload.id ? 33 : 60,
+                                marginTop: message.sender._id === user.payload.id ? 3 : 3,
+                                marginRight: 65,
+                                borderRadius: '20px',
+                                padding: '5px 15px',
+                                maxWidth: '75%',
+                            }}
+                            >
+                            {message.content}
+                            </span>
+                        </div>);
+                    }
+                    })}
                 </div>
+            
                 </Content>
 
                 <Footer className="chat-footer">
-                    {/* <Input.Search
-                        placeholder="Type a message"
-                        enterButton={<Button type="primary">Send</Button>}
-                        onSearch={handleMessageSend}
-                    /> */}
 
                     <TextArea
                         value={newMessage}
@@ -335,7 +493,16 @@ const NewChat = () => {
                 </Footer>
 
             </Layout>
+            )}
+
+            {(!selectedChat && (
+                <div className="unselect-chat">
+                    <h1>เลือกบทสนทนา</h1>
+                </div>
+            ))}
+            
         </Layout>
+        
     </div>
   )
 }

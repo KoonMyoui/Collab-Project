@@ -83,6 +83,7 @@ const ManageOpport = () => {
     // form function
     const handleFormSubmit = (values) => {
         // Handle data update using the form values
+        // e.preventDefault()
         console.log('Form values:', values);
         console.log(initFormData.pid, initFormData.title, token);
         updateOpport(initFormData.pid, values, token)
@@ -96,29 +97,29 @@ const ManageOpport = () => {
         setIsModalOpen(false);
       };
       
-      const handleChangeIsJoin = (isJoin, pid) => {
-        console.log('switchhhh',isJoin , pid)
-        updateIsJoinOpport(pid, {isJoin}, token)
-        .then(res=>{
-            console.log(res)
-            loadData()
-        })
-        .catch(err=>{
-            console.log(err)
-        })
-      }
+    const handleChangeIsJoin = (isJoin, pid) => {
+    console.log('switchhhh',isJoin , pid)
+    updateIsJoinOpport(pid, {isJoin}, token)
+    .then(res=>{
+        console.log(res)
+        loadData()
+    })
+    .catch(err=>{
+        console.log(err)
+    })
+    }
 
-      const handleChangeStatus = (enabled, pid) => {
-        console.log('switchhhh',enabled , pid)
-        updateStatusOpport(pid, {enabled}, token)
-        .then(res=>{
-            console.log(res)
-            loadData(token)
-        })
-        .catch(err=>{
-            console.log(err)
-        })
-      }
+    const handleChangeStatus = (enabled, pid) => {
+    console.log('switchhhh',enabled , pid)
+    updateStatusOpport(pid, {enabled}, token)
+    .then(res=>{
+        console.log(res)
+        loadData(token)
+    })
+    .catch(err=>{
+        console.log(err)
+    })
+    }
 
     //data for table
     const data = loading ? [] : state.map((item ,index) => ({

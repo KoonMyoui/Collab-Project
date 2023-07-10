@@ -21,6 +21,7 @@ const ProjectDetail = () => {
     const [teamRequested, setTeamRequested] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [token, setToken] = useState();
+    const [uid, setUid] = useState();
 
     const socket = io.connect("http://localhost:5000")
     const user = useSelector((state) => state.userStore)
@@ -39,8 +40,9 @@ const ProjectDetail = () => {
     useEffect(() => {
         if (user && !token) {
           setToken(user.payload.token);
+          setUid(user.payload.id);
         }
-      }, [user, token]);
+    }, [user, token]);
       
 
     // useEffect(()=>{
@@ -74,6 +76,17 @@ const ProjectDetail = () => {
             console.log(err.response)
         })
     }
+
+    const checkMeSentReq = () => {
+          meRequested()
+          .then(res => {
+            setloading(false)
+            console.log(res.data)
+    
+          }).catch(err =>{
+              console.log(err.response)
+          })
+      };
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -220,12 +233,13 @@ const ProjectDetail = () => {
                     {user && project.owner ? (                    
                         <Card>
                             <div>
-                                <Avatar size={64} src={project.owner.pic}/>
+                                {/* <Avatar size={64} src={project.owner.pic}/> */}
                                 <Title level={3}>{project.owner.username}</Title>
                                 {/* <Avatar size={64} src="avatar-image-url"/>
                                 <Title level={3}>user name</Title> */}
-                                <Tag color="blue">Python</Tag>
-                                <Tag color="green">Java</Tag>
+
+                                {/* <Tag color="blue">Python</Tag>
+                                <Tag color="green">Java</Tag> */}
                             </div>
                             <Divider />
                             <div>
@@ -235,9 +249,15 @@ const ProjectDetail = () => {
                             </div>
                             <Divider />
                             <div>
-                                <Button type="primary" onClick={showModal}>
+                                {project.owner._id !== uid && (
+                                    <Button type="primary" onClick={showModal}>
                                     เข้าร่วม
                                 </Button>
+                                )}
+                                {/* <Button type="primary" onClick={showModal}>
+                                    เข้าร่วม
+                                </Button> */}
+
                                 <Modal title="เข้าร่วมโปรเจค" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                                     <p>หวังว่าจะได้สนุกกับเพื่อนใหม่ และโปรเจคแสนสนุก</p>
                                     <p>เราจะส่งคำขอเข้าร่วมนี้ไปให้เจ้าของโปรเจค รอดูผลใน notification นะ</p>

@@ -8,7 +8,7 @@ export const createTeamRequest = async(values, authtoken)=>{
         }
     });
 }
-//not use it old
+//not use it old join-project/requested
 export const meRequested = async (values, authtoken) => {
     return await axios.post(process.env.REACT_APP_API + "/join-project/requested",values,
     {

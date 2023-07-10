@@ -8,6 +8,12 @@ export const createOpport = async(values, authtoken)=>{
         }
     });
 }
+///opport/search
+
+export const searchOpport = async (params) => {
+    // const params = { keyword };
+    return await axios.get(process.env.REACT_APP_API + "/opport/search", {params});
+};
 
 export const getAllOpport = async () => {
     return await axios.get(process.env.REACT_APP_API + "/opport");

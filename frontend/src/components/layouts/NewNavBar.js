@@ -46,8 +46,9 @@ const NewNavBar = () => {
   const goLogout = () => {
     dispatch(logout({
         payload: null
-      }));
+      }))
     navigate("/");
+
   };
 
   return (
@@ -57,7 +58,7 @@ const NewNavBar = () => {
         <Link to="/">หน้าแรก</Link>
       </Menu.Item>
 
-      {user && (
+      {user !== null && user.payload !== null && (
         <>
           {/* {user.username} */}
         <Space size="large">
@@ -76,7 +77,8 @@ const NewNavBar = () => {
         </Space>
 
           <SubMenu
-            style={{ textAlign: 'right' }}
+          //set to right 
+            // style={{ position: 'absolute', right: 20 }}
             key="SubMenu"
             icon={<UserOutlined />}
             title={user.payload.username}
@@ -116,19 +118,18 @@ const NewNavBar = () => {
         </>
       )}
 
-      {!user && (
+      {(user === null || user.payload === null) && (
         <>
           <Menu.Item
             key="login"
-            style={{ float: "right" }}
+            style={{ position: 'absolute', right: 150 }}
             icon={<LoginOutlined />}
           >
-            {/* <a href="" ></a>*/}
             <Link to="/login">เข้าสู่ระบบ</Link>
           </Menu.Item>
         
           <Menu.Item
-            style={{ float: 'right' }}
+            style={{ position: 'absolute', right: 0 }}
             key="register"
             icon={<UserAddOutlined />}
           >

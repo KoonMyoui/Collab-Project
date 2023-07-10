@@ -36,6 +36,41 @@ exports.createOpport = async(req,res)=>{
     }
 }
 
+exports.searchOpport = async(req,res)=>{
+    //collaborate category
+    try{
+        const { keyword, category, collaborator } = req.query;
+        console.log("searchOpport ",keyword)
+
+        const query = {};
+
+        if (keyword) {
+        //   query.title = { $regex: keyword, $options: "i" };// insensitive case TT == tt
+          query.$or = [
+            { title: { $regex: keyword, $options: "i" } },
+            { category: { $regex: keyword, $options: "i" } }
+          ];
+        }
+    
+        if (category) {
+          query.category = category;
+        }
+    
+        if (collaborator) {
+          query.collaborate = collaborator;
+        }
+    
+        query.enabled = true;
+
+        const opport = await OpportModel.find(query).sort({ createdAt: -1 })
+        res.send(opport);
+
+    }catch(err){
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+
 exports.getAllOpport = async(req,res)=>{
     try{
         const opport = await OpportModel.find({
@@ -80,14 +115,16 @@ exports.updateOpport = async(req,res)=>{
     try{
         const {title, description, collaborate, category} = req.body
         console.log("updateOpport",req.body)
+        console.log("updateOpport",req.params.id)
         const opport = await OpportModel.findByIdAndUpdate(
-            {_id: req.params.id},
+            req.params.id,
             {
                 title: title,
                 description: description,
                 collaborate: collaborate,
                 category: category
-            }
+            },
+            {new: true}
         )
         // const opp = await OpportModel.findById({_id: req.params.id})
         console.log("up",opport)

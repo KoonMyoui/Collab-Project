@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 
-import { Button, Form, Input , Select, Checkbox} from 'antd';
+import { Button, Form, Input, Select, Typography} from 'antd';
+import { UserOutlined, EditOutlined } from '@ant-design/icons';
 
 import { createOpport } from '../../functions/opport';
 import { createGroupChat } from '../../functions/chat'
@@ -16,6 +17,8 @@ const OpportForm = () => {
     console.log('user',user)
     const token = user.payload.token
 
+    const [form] = Form.useForm()
+    const { Title } = Typography;
     const onFinish = (values) => {
         console.log('data:', values);
 
@@ -25,6 +28,8 @@ const OpportForm = () => {
             createGroupChat(res.data.data, token)
             .then(res=>{
                 console.log('create groupchat',res)
+                alert('create project success')
+                form.resetFields(); // Reset form fields
             })
           })
           .catch(err=>{
@@ -38,7 +43,13 @@ const OpportForm = () => {
 
   return (
     <div>
-        <Form
+        
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 64px)' }}>
+            <div style={{ margin: '0 auto', width: 600, padding: 24, boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)', borderRadius: 8 }}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: 24 ,marginTop: 14}}>Create Project</Title>
+            <Form
+            form={form} 
             name="basic"
             labelCol={{
             span: 8,
@@ -46,11 +57,11 @@ const OpportForm = () => {
             wrapperCol={{
             span: 16,
             }}
-            style={{
-            maxWidth: 600,
-            }}
+            // style={{
+            // maxWidth: 600,
+            // }}
             initialValues={{
-            remember: true,
+            remember: false,
             }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
@@ -62,11 +73,11 @@ const OpportForm = () => {
             rules={[
                 {
                 required: true,
-                message: 'Please input your username!',
+                message: 'Please input your title',
                 },
             ]}
             >
-            <Input />
+            <Input prefix={<EditOutlined />} placeholder="Title"/>
             </Form.Item>
 
             <Form.Item
@@ -75,7 +86,7 @@ const OpportForm = () => {
             rules={[
                 {
                 required: true,
-                message: 'Please input your dsesc',
+                message: 'Please input your description',
                 },
             ]}
             >
@@ -89,12 +100,12 @@ const OpportForm = () => {
             rules={[
                 {
                 required: true,
-                message: 'Please input your colab',
+                message: 'Please select collaboration',
                 },
             ]}
             >
             <Select
-            placeholder="you looking for?"
+            placeholder="Looking for?"
             allowClear
             >
                 <Option value="Software engineer">Software engineer</Option>
@@ -111,13 +122,13 @@ const OpportForm = () => {
             rules={[
                 {
                 required: true,
-                message: 'Please input your colab',
+                message: 'Please select category',
                 },
             ]}
             >
             
             <Select
-            placeholder="kind of Opportunity"
+            placeholder="Project category"
             allowClear
             >
                 <Option value="Art">Art</Option>
@@ -137,8 +148,10 @@ const OpportForm = () => {
                 Submit
             </Button>
             </Form.Item>
-        </Form>
+            </Form>
 
+            </div>
+        </div>
     </div>
   )
 }

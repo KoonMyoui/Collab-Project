@@ -9,7 +9,8 @@ const {
     removeOpport,
     getAllOpportById,
     changeOpportJoin,
-    changeOpportStatus
+    changeOpportStatus,
+    searchOpport
 
 } = require('../controllers/opport')
 
@@ -19,6 +20,8 @@ const { auth, isAdmin, protect } = require('../middleware/auth')
 //@Method   GET
 //@Access   Private
 router.get('/opport', getAllOpport)
+
+router.get('/opport/search', searchOpport)
 
 //@Enpoint  http://localhost:4000/api/opport/:id
 //@Method   GET

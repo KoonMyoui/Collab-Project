@@ -55,17 +55,18 @@ const Profile = () => {
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {user.payload.pic ? 
               (
-              <Avatar size={64} src={user.payload.pic} />
+              // <Avatar size={64} src={user.payload.pic} />
+              <Avatar size={64}>{user.payload.username}</Avatar>
               ) : 
               (
                 <Avatar size={64} icon={ <UserOutlined />} />
               )}
               <div style={{ marginLeft: '1rem' }}>
                 <Title level={3}>{user.payload.username}</Title>
-                <Paragraph>Full Stack Developer</Paragraph>
+                <Paragraph>edit profile for fun</Paragraph>
               </div>
             </div>
-            <Button type="primary" size="small">Edit Profile</Button>
+            {/* <Button type="primary" size="small">Edit Profile</Button> */}
           </div>
           <Divider />
           <div >

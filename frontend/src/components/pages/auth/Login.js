@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { loginAuth } from '../../functions/auth'
 
-import { Button, Checkbox, Form, Input, Space, Row, Col, Typography } from 'antd';
+import { Button, Checkbox, Form, Input, Space, Typography, message } from 'antd';
 
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -22,7 +22,8 @@ const Login = () => {
     if (role === "admin") {
       navigate("/admin/index");
     } else {
-      navigate("/user/index");
+      // navigate("/user/index");
+      navigate("/");
     }
   };
 
@@ -41,6 +42,27 @@ const Login = () => {
     navigate("/register")
   };
 
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Login success',
+    });
+  };
+
+  const error = (err) => {
+    messageApi.open({
+      type: 'error',
+      content: err,
+    });
+  };
+
+  const warning = () => {
+    messageApi.open({
+      type: 'warning',
+      content: 'This is a warning message',
+    });
+  };
   //handle
   const handleChange = (e) => {
     setValue({...value, [e.target.name]:e.target.value})
@@ -77,6 +99,7 @@ const Login = () => {
     .then(res => {
       console.log(res.data)
       alert('Login success')
+      // success()
       dispatch(login({
         payload:{
           token: res.data.token,
@@ -90,6 +113,7 @@ const Login = () => {
     .catch((err) => {
       console.log(err.response.data)
       alert(err.response.data)
+      // error(err.response.data)
     })
   }
 
@@ -187,7 +211,7 @@ const Login = () => {
         </Col>
       </Row> */}
 
-
+      
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 64px)' }}>
       <div style={{ width: 400, padding: 24, boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)', borderRadius: 8 }}>
         <Title level={2} style={{ textAlign: 'center', marginBottom: 24 ,marginTop: 14}}>Login</Title>

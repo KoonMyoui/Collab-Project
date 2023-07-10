@@ -14,6 +14,8 @@ const { Server } = require("socket.io");
 //connectDB
 connectDB()
 
+// model 
+const Message = require("./models/Message")
 const app = express()
 
 //socket.io
@@ -34,7 +36,26 @@ io.on("connection", (socket) => {
 
   socket.on("send_message",(data)=>{
     console.log("recieve",data)
+    // save data
+    const newMessage = new Message({
+      sender: data.sender,
+      content: data.content,
+      chat: data.chatId,
+    });
+    console.log("recieve",newMessage)
+    newMessage.save()
+      .then(() => {
+        io.to(data.room).emit('recieve_message', {content: data.content, room: data.room});
+        
+      })
+      .catch((err) => {
+        console.log(err.message)
+      })
+
     // socket.broadcast.emit("recieve_message",data)
+
+    // Broadcast the message to all clients in the room
+    // io.to(data.room).emit('recieve_message', {content: data.content, room: data.room});
   })
 
   socket.on("send_notifications",(data)=>{
@@ -43,9 +64,9 @@ io.on("connection", (socket) => {
     socket.to(data.owner_id).emit('getNotification', data)
   })
 
-  // socket.on("disconnect", () => {
-  //   console.log(socket.id,"disconnect")
-  // })
+  socket.on("disconnect", () => {
+    console.log(socket.id,"disconnect")
+  })
 });
 httpServer.listen(5000, () => {
     console.log("Socket.io Connected")
